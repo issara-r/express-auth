@@ -1,24 +1,27 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+require('dotenv').config();
+const { login, authenticateJWT, addUsers, getUser } = require('./authentication/auth'); // นำเข้า auth.js
+
+const PORT = process.env.PORT || 9000;
 
 // Middleware
 app.use(express.json());
 
-// Sample API
-app.get('/', (req, res) => {
-    res.send({ message: 'Welcome to my API!' });
-});
+// เพิ่ม API สำหรับ Login
+app.post('/api/register', addUsers)
 
-app.get('/api/data', (req, res) => {
-    res.send({ data: [1, 2, 3, 4, 5] });
-});
+app.post('/login', login);
 
-app.post('/api/data', (req, res) => {
-    const newData = req.body;
-    res.status(201).send({ status: 'Data added', data: {"status :": res.statusCode, "data :": newData} });
+app.get('/api/user', authenticateJWT, async (req, res) => {
+  try {
+    const users = await getUser(); // เรียกใช้ฟังก์ชัน getUser
+    res.status(200).json(users); // ส่งข้อมูลกลับเป็น JSON
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
