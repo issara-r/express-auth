@@ -13,6 +13,12 @@ app.post('/api/register', addUsers)
 
 app.post('/login', login);
 
+app.get('/test', () => {
+  return {
+    test: "xxx"
+  }
+})
+
 app.get('/api/user', authenticateJWT, async (req, res) => {
   try {
     const users = await getUser(); // เรียกใช้ฟังก์ชัน getUser
